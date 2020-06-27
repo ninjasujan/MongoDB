@@ -109,3 +109,43 @@ Read operation in Embedded documents
 > db.flightData.find({"status.description": "one-time"}).pretty()
 
 
+/* Assignment basic CRUD operation */
+1. Create a database
+> use patients
+> db.patientData.insertOne({
+    "firstName": "Ryu",
+    "lastName": "Peiling",
+    "age": 34,
+    "history": [
+        {"disease": "cold", "treatment": "2 days bed rest with simple antibatic tablet"},
+        {"disease": "fever", "treatment": "3 days bed rest with paracetomal tablet"}
+    ]
+
+});
+
+> db.patientData.insertOne({
+    "firstName": "Mario",
+    "lastName": "Charla",
+    "age": 24,
+    "history": [
+        {"disease": "head-ache", "treatment": "Syndome tab"},
+        {"disease": "joint pain", "treatment": "3 days bed rest with ice cube massage"}
+    ]
+});
+
+> db.patientData.insertOne({
+    "firstName": "Clara",
+    "lastName": "Fernadez",
+    "age": 35,
+    "history": [
+        {"disease": "head-ache", "treatment": "Syndome tab"},
+        {"disease": "joint pain", "treatment": "3 days bed rest with ice cube massage"}
+    ]
+});
+
+/* update patient name, age and history entry */
+db.patientData.updateOne({firstName: "Claira"}, {$set: {firstName: "Claira", age: 26, "history": [
+    {"disease": "very sad", "treatment": "2 days bed rest"}
+]}});
+
+
