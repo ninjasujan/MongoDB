@@ -1,0 +1,111 @@
+
+/* All commands realted to MongoDB shell version */
+
+/* To create data base */
+> use <db_name>
+> use shop
+
+/* To create collection inside a database */
+> db.products.insertOne({"name": "A Book", "price": 12.99, "description": "Holy water book"})
+// on the fly while inserting a document it creates a collection
+
+/* To view all the data stored in a collection */
+> db.products.find().pretty();
+
+
+
+/* Inserting a Document */
+
+> db.products.insertOne({"name": "A laptop", "price": 129.99, "description": {
+    cpu: "Intel i3",
+    harddisk: 128,
+    ram: 16
+}});
+
+
+
+/* Detail CRUD operation */
+
+Insert a document to the collection
+> db.flightData.insertOne({
+    "departureAirport": "MUC",
+    "arrivalAirport": "SFO",
+    "aircraft": "Airbus A380",
+    "distance": 12000,
+    "intercontinental": true
+  });
+
+
+/* Delete single doc frpm DB */
+> db.flightData.deleteOne({"departureAirport": "MUC"});
+
+/* Updating the document */
+> db.flightData.updateMany({}, {$set: {"marker": true}})
+
+/* Delete all data from collection */
+> db.flightData.deleteMany({marker: true});
+
+
+/* Inserting a many document at once */
+> db.flightData.insertMany([{
+    "departureAirport": "MUC",
+    "arrivalAirport": "SFO",
+    "aircraft": "Airbus A380",
+    "distance": 12000,
+    "intercontinental": true
+  },
+  {
+    "departureAirport": "LHR",
+    "arrivalAirport": "TXL",
+    "aircraft": "Airbus A320",
+    "distance": 950,
+    "intercontinental": false
+  }]);
+
+/* Find with filter */
+> db.flightData.find({intercontinental: true});
+
+> db.flightData.find({distance: {$gt: 9000}})
+
+/* update vs updateMany */
+update -
+    update replace the object with new one doesn't require $set opeartor
+updateMany
+    updateMany merges with old objects and require $set operator to update the objects
+
+Try to avoid update as much as possible instead use replaceOne and replace
+
+> db.flightData.update({"intercontinental" : true}, {delayed: true})
+> db.flightData.replaceOne({"_id" : ObjectId("5ef7203b7049ae870dc48150")}, {
+    "departureAirport": "MUC",
+    "arrivalAirport": "SFO",
+    "aircraft": "Airbus A380",
+    "distance": 12000,
+    "intercontinental": true
+  });
+
+/* Find() always return cursor not a data so that we can loop through the cursor 
+gives first 20 doc default
+using toArray() and forEach we can retriew all the doc
+*/
+
+
+/* Projection */
+> db.passengerData.find({}, {name: 1, _id: 0}).pretty()
+1 - indicates show
+0 - indicates hide
+
+
+/* Nested document */
+ Empbeddde objects
+> db.flightData.updateMany({}, {$set: {status: {description: "one-time", lastUpdated: "1 hour ago"}}})
+
+Embedded array'
+> db.passengerData.updateOne({name: "Chris Hayton"}, {$set: {hobbies: ["sports", "cooking"]}})
+
+Read operation in Embedded documents
+> db.passengerData.findOne({name: "Chris Hayton"}).hobbies
+> db.passengerData.findOne({hobbies: "sports"})
+> db.flightData.find({"status.description": "one-time"}).pretty()
+
+
