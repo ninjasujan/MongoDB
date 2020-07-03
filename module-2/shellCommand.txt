@@ -1,0 +1,144 @@
+
+/* Relations in MongoDB */
+
+One to One Relation
+2 ways Embedded documents and Reference types
+
+    Reference Types
+    EX:
+        > db.patients.insertOne({name: "Max", age: 29, disease: "max-disease"});
+        > db.diseaseSummary.insertOne({_id: "max-disease", diseases: ["cold", "fever"]});
+        > db.diseaseSummary.findOne({_id: <disease_id>})
+
+    Embedded documents
+        > db.patients.insertOne({name: "Max", age: 29, disease: ["cold", "fever"]});
+
+        for One to One relations Embedded documents are the best solution for implementation perspective
+
+One to Many
+ 2 ways Embedded docments and Reference Types
+ Embedded types
+ > db.questions.insertOne({title: "How old are you?", answears: ["29 years old", "15 years old"]})
+ Reference types
+ > db.questions.insertOne({title: "How old are you?", answears: ["ans1", "ans2"]})
+ > db.answears.insertOne({_id: "ans1", ans: "29 years old"})
+ > db.answears.insertOne({_id: "ans2", ans: "15 years old"})
+
+
+Many to Many relations
+2 approch reference and Embedded types
+    In a reference types we can create new collection and store the _id field of the document from both the
+    collectio or we can create a Embedded doc in either of the collection and store the _id of the doc from other collection
+    in both the approch updating the document easily reflectes in the all doc
+
+    products collection
+    > db.products.insertOne({title: 'laptop', price: 103.56, description: {"cpu": "Intel i5", "ram": 4gb}}); 
+    > db.products.insertOne({title: 'A Pen', price: 0.56});
+    > db.products.insertOne({title: 'A book', price: 14.56}); 
+
+    user collections
+    > db.users.insertOne({name: "Manu", city: "Boston"});
+
+    orders collection
+    > db.orders.insertOne({userId: user1, productId: prod1, qty: 2});
+    > db.orders.insertOne({userId: user1, productId: prod2, qty: 3});
+
+    Embedded types
+    db.users.insertOne({name: "Manu", city: "Boston", orders: [
+        {productId: prod1, qty: 3},
+        {productId: prod2, qty: 4},
+    ]});
+
+
+/* Lookup - Merge related doc which is split into collection in reference types */
+    Fetched 2 related docuemnts and merges together and gives one documents
+
+    EX: 
+    The following queries helps to demonstrate the lookup
+        > db.bookData.insertMany([
+            {title: 'One Man Army',
+             price: 34.12,
+             authors: [ObjectId("5efd58d8926d34cda36e87f7"), ObjectId("5efd58d8926d34cda36e87f8")]
+            },
+            {title: "War As I knew", 
+            price: 25.67,
+            authors: [ObjectId("5efd58d8926d34cda36e87f9"), ObjectId("5efd58d8926d34cda36e87f7")]
+            }
+        ]);
+
+        > db.authorsData.insertMany([{
+            name: 'Maximilain',
+            age: 29,
+        }, {
+            name: 'Ryu',
+            age: 30,
+        }, {
+            name: 'Shaun',
+            age: 54
+        }]);
+
+    Lookup query
+    > db.bookData.aggregate([{$lookup: {from: "authorsData", localField: "authors", "foreignField": "_id", as: "authorsList"}}])
+
+Schema validation
+ Collection creation explicitly
+ > db.createCollection("posts", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["title", "text", "creator", "comments"],
+            properties: {
+                title: {
+                    bsonType: "string",
+                    description: "Must be a string and required"
+                },
+                text: {
+                    bsonType: "string",
+                    description: "Must be a string and required"
+                },
+                creator: {
+                    bsonType: "objectId",
+                    description: "Must be an object ID and required"
+                },
+                comments: {
+                    bsonType: "array",
+                    description: "Must be an array and required",
+                    items: {
+                        bsonType: "object",
+                        required: ["text", "author"],
+                        properties: {
+                            text: {
+                                bsonType: "text",
+                                description: "Must be a string and it required"
+                            },
+                            author: {
+                                bsonType: "objectId",
+                                description: "Must be a object ID and required"
+                            }
+                        },
+                    }
+                }
+            }
+        }
+    }
+});
+
+> db.posts.insertOne({
+    "title": "Simple Post",
+    "text": "Clicked in London, Vendas park",
+    "creator": ObjectId("5eff05463cf977adadc6d9f8"),
+    "comments": [{
+        "text": "Awsome pic keep it up", 
+        "author": ObjectId("5eff05ab3cf977adadc6d9f9")
+        }, 
+        {
+            "text": "Mind blowing",
+            "author": ObjectId("5eff05463cf977adadc6d9f8")
+        }]
+
+})
+
+
+
+
+
