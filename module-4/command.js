@@ -24,6 +24,15 @@ db.movies.find({
 });
 
 // $and
-db.movies.find({
-  $and: [{ "rating.average": { $gt: 9 } }, { genres: "Drama" }],
-});
+db.movies
+  .find({ $and: [{ "rating.average": { $gt: 9 } }, { genres: "Drama" }] })
+  .pretty();
+
+db.movies.find({ genres: "Drama", genres: "Horror" }); // will replace the first conditon because of same key in json object, $and helps to overcome the problem
+
+// $not operator
+db.movies.find({ runtime: { $not: { $eq: 60 } } }).count();
+
+// $exist
+db.users.find({ age: { $exists: true } }).pretty();
+db.users.find({ phone: { $exists: true, $ne: null } });
