@@ -36,3 +36,48 @@ db.movies.find({ runtime: { $not: { $eq: 60 } } }).count();
 // $exist
 db.users.find({ age: { $exists: true } }).pretty();
 db.users.find({ phone: { $exists: true, $ne: null } });
+
+// $type
+db.users.find({ phone: { $type: 2 } });
+db.users.find({ phone: { $type: "string" } });
+db.users.find({ phone: { $type: [1, 2] } });
+
+/* Regex $regex */
+db.movies.find({ summary: { $regex: /musical$/ } });
+
+/* $expr */
+db.sales.find({ $expr: { $gt: ["$volume", "$target"] } }).pretty();
+
+// Assignment
+
+db.box
+  .find({
+    $and: [{ "meta.rating": { $gt: 9.2 } }, { "meta.runtime": { $lt: 100 } }],
+  })
+  .pretty();
+
+db.box.find({ genre: { $in: ["drama", "action"] } });
+
+db.box.find({ $expr: { $gt: ["$visitors", "$expectedVisitors"] } });
+
+/* Array - Query Selector */
+// $size
+db.users.find({ hobbies: { $size: 3 } });
+
+// $all
+db.box.find({ genre: { $all: ["thriller", "action"] } });
+
+// $eleMatch
+db.users
+  .find({
+    $and: [{ "hobbies.title": "Cooking" }, { "hobbies.frequency": { $gt: 5 } }],
+  })
+  .pretty();
+
+// problem in extracting - replace by $eleMatch
+db.users
+  .find({
+    hobbies: { $elemMatch: { title: "Cooking", frequency: { $gte: 5 } } },
+  })
+  .pretty();
+// even only one doc in array matched the condition over all array will be retrived
