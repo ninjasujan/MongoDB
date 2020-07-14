@@ -80,4 +80,13 @@ db.users
     hobbies: { $elemMatch: { title: "Cooking", frequency: { $gte: 5 } } },
   })
   .pretty();
-// even only one doc in array matched the condition over all array will be retrived
+// even only one doc in array matched the condition, over all array will be retrived
+
+// Assignment
+db.box2.find({ genre: { $size: 2 } }).pretty();
+db.box2.find({ "meta.aired": 2018 }).pretty();
+db.box2.find({ ratings: { $elemMatch: { $gt: 8, $lt: 10 } } }).pretty();
+
+/* Sorting the doc in cursor */
+db.movies.find().sort({ ratings: 1, runtime: 0 }); // 1 - Asc 0 - Desc
+db.movies.find().sort({ ratings: 1 }).skip(10).limit(20);
