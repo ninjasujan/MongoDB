@@ -90,3 +90,10 @@ db.box2.find({ ratings: { $elemMatch: { $gt: 8, $lt: 10 } } }).pretty();
 /* Sorting the doc in cursor */
 db.movies.find().sort({ ratings: 1, runtime: 0 }); // 1 - Asc 0 - Desc
 db.movies.find().sort({ ratings: 1 }).skip(10).limit(20);
+
+// Projection in Array
+db.movies.find({ genres: { $all: ["Drama", "Horror"] } }, { "genres.$": 1 });
+
+// $slice method
+db.movies.find({ genres: "Drama" }, { genres: { $slice: 2 } }).pretty();
+db.movies.find({ genres: "Drama" }, { genres: { $slice: [1, 2] } }).pretty();
