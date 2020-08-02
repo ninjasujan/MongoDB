@@ -49,3 +49,53 @@ db.contacts.createIndex(
   { email: 1 },
   { unique: true, partialFilterExpression: { $email: { $exist: true } } }
 );
+
+/* TTL indexes */
+db.sesion.insertMany([
+  { name: "Sujan", createdAt: new Date() },
+  { name: "Max", createdAt: new Date() },
+]);
+
+// expireAfterSeconds
+db.sesion.createIndex({ createdAt: 1 }, { expireAfterSeconds: 10 });
+// * It works only on single field object and only on date object
+
+/* Covered query */
+// all the fields in the query are part of an index, and
+// all the fields returned in the results are in the same index.
+// no fields in the query are equal to null (i.e. {"field" : null} or {"field" : {$eq : null}} )
+
+/* Text index */
+db.contactData.createIndex({ desc: "text" });
+// It will creates the text index on the field desc
+// text index devides the text into smaller subset and makes index avoids the stop words
+db.contactData.find({ $text: { $search: "Text book" } });
+// it will look for word Text or book in all the documents
+// text index costly so we may have only one text index
+db.contacts.dropIndex("<indexName>"); // index name is available through getIndexes() command
+// we can't have more than one index in collection but we can combine the indexes
+db.contactData.createIndex({ desc: "text", title: "A Book" });
+
+db.contactData.find({ $text: { $search: "Text -book" } }); // excludes the word book n search
+
+// configuration
+db.products.createIndex(
+  { title: "text", description: "text" },
+  {
+    default_language: "english",
+    weights: {
+      title: 1,
+      description: 10,
+    },
+  }
+);
+
+db.products.createIndex({
+  title: "text",
+  description: "text",
+});
+
+db.products.find(
+  { $text: { $search: "Some", $caseSensitive: true } },
+  { score: { $meta: "textScore" } }
+);
