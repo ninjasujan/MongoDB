@@ -108,7 +108,7 @@ Schema validation
                         required: ["text", "author"],
                         properties: {
                             text: {
-                                bsonType: "text",
+                                bsonType: "string",
                                 description: "Must be a string and it required"
                             },
                             author: {
@@ -125,7 +125,7 @@ Schema validation
 
 > db.posts.insertOne({
     "title": "Simple Post",
-    "text": "Clicked in London, Vendas park",
+    text: "simple",
     "creator": ObjectId("5eff05463cf977adadc6d9f8"),
     "comments": [{
         "text": "Awsome pic keep it up", 
@@ -135,7 +135,6 @@ Schema validation
             "text": "Mind blowing",
             "author": ObjectId("5eff05463cf977adadc6d9f8")
         }]
-
 })
 
 
