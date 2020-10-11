@@ -1,0 +1,61 @@
+
+db.test1.insertOne({
+    name: "Mario",
+    age: 21,
+    gender: 'F',
+    email: 'mario@gmail.com',
+    contact: ['178451', '170123'],
+    address: {
+        street: 'Doston',
+        houseNo: 'J-142',
+        state: 'Los Vegas'
+    }
+});
+
+db.test1.updateOne({name: 'Mario'}, {$set: {"address.street": 'Kape Town'}});
+
+db.test1.updateOne({name: "Ryu"}, {$set: {major: [{title: 'MCA', gpa: '4.5'}, {title: 'BCA', gpa: '4.1'}]}});
+
+db.test1.updateOne({name: 'Mario'}, {$set: {major: [{title: 'BTech', gpa: '3.1'}, {title: 'BE', gpa: '3.4'}]}})
+
+
+orders: [
+    { 
+        products: [{id: 1, qty: 2}, {id: 2, qty: 2}]
+        totalPrice: 123
+    },
+    {},
+    {}
+]
+
+db.users.insertMany([
+    {name: 'Ryu', age: 21, email: 'ryu@gmail.com'},
+    {name: 'Shaun', age: 22, email: 'shaun@gmail.com'},
+    {name: 'Mario', age: 24, email: 'mario@gmail.com'}
+]);
+
+
+
+db.products.insertMany([
+    {title: 'Asus Vivobook', price: 34000, configuration: {hd: '1TB', ram: '4GB', processor: 'Intel i3'}},
+    {title: 'Asus Zenbook', price: 78000, configuration: {hd: '1TB', ssd: '512GB', processor: 'Intel i5', ram: '8GB'}},
+    {title: 'Asus Tuf', price: 65000, configuration:{hd: '1TB', ssd: '256GB', processor: 'Intel i5', ram: '8GB'}}
+]);
+
+db.orders.insertOne({
+    products: [{id: ObjectId, qty: 2}, {id: ObjectId, qty: 3}],
+    userId: ObjectId,
+    totalPrice: $45
+});
+
+
+db.book.insertMany([
+    {title: 'Database Management', price: 570, authors: [ObjectId("5f814ae0aa08fd8010568c26"),  ObjectId("5f814ae0aa08fd8010568c27")]},
+    {title: 'OOPs Book', price: 670, authors: [ ObjectId("5f814ae0aa08fd8010568c28"), ObjectId("5f814ae0aa08fd8010568c26")]}    
+]);
+
+
+db.book.aggregate([{$lookup: {from: 'users', localField: 'authors', "foreignField": '_id', as: 'authors'}}])
+
+
+

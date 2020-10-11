@@ -100,13 +100,14 @@ using toArray() and forEach we can retriew all the doc
  Empbeddde objects
 > db.flightData.updateMany({}, {$set: {status: {description: "one-time", lastUpdated: "1 hour ago"}}})
 
-Embedded array'
+Embedded array
 > db.passengerData.updateOne({name: "Chris Hayton"}, {$set: {hobbies: ["sports", "cooking"]}})
 
 Read operation in Embedded documents
 > db.passengerData.findOne({name: "Chris Hayton"}).hobbies
 > db.passengerData.findOne({hobbies: "sports"})
 > db.flightData.find({"status.description": "one-time"}).pretty()
+
 
 
 /* Assignment basic CRUD operation */
@@ -120,7 +121,6 @@ Read operation in Embedded documents
         {"disease": "cold", "treatment": "2 days bed rest with simple antibatic tablet"},
         {"disease": "fever", "treatment": "3 days bed rest with paracetomal tablet"}
     ]
-
 });
 
 > db.patientData.insertOne({
@@ -147,5 +147,7 @@ Read operation in Embedded documents
 db.patientData.updateOne({firstName: "Claira"}, {$set: {firstName: "Claira", age: 26, "history": [
     {"disease": "very sad", "treatment": "2 days bed rest"}
 ]}});
+
+
 
 

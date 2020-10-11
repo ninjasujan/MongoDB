@@ -2,7 +2,7 @@
 /* Relations in MongoDB */
 
 One to One Relation
-2 ways Embedded documents and Reference types
+2 ways, Embedded documents and Reference types
 
     Reference Types
     EX:
@@ -12,18 +12,16 @@ One to One Relation
 
     Embedded documents
         > db.patients.insertOne({name: "Max", age: 29, disease: ["cold", "fever"]});
-
         for One to One relations Embedded documents are the best solution for implementation perspective
 
 One to Many
- 2 ways Embedded docments and Reference Types
+ 2 ways, Embedded docments and Reference Types
  Embedded types
  > db.questions.insertOne({title: "How old are you?", answears: ["29 years old", "15 years old"]})
  Reference types
  > db.questions.insertOne({title: "How old are you?", answears: ["ans1", "ans2"]})
  > db.answears.insertOne({_id: "ans1", ans: "29 years old"})
  > db.answears.insertOne({_id: "ans2", ans: "15 years old"})
-
 
 Many to Many relations
 2 approch reference and Embedded types
@@ -76,6 +74,7 @@ Many to Many relations
             name: 'Shaun',
             age: 54
         }]);
+
 
     Lookup query
     > db.bookData.aggregate([{$lookup: {from: "authorsData", localField: "authors", "foreignField": "_id", as: "authorsList"}}])
