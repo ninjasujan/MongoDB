@@ -131,3 +131,50 @@ db.persons.aggregate([
   { $group: { _id: { location: '$nat' }, average: { $avg: '$dob.age' } } },
   { $count: 'email' },
 ]);
+
+db.persons.aggregate([
+  { $match: { 'dob.age': { $gt: 50 } } },
+  {
+    $project: {
+      _id: 0,
+      email: 1,
+      fullName: {
+        $concat: [
+          { $toUpper: { $substrCP: ['$name.title', 0, 1] } },
+          {
+            $substrCP: [
+              '$name.title',
+              1,
+              { $subtract: [{ $strLenCP: '$name.title' }, 1] },
+            ],
+          },
+          ' ',
+          { $toUpper: { $substrCP: ['$name.first', 0, 1] } },
+          {
+            $substrCP: [
+              '$name.first',
+              1,
+              { $subtract: [{ $strLenCP: '$name.first' }, 1] },
+            ],
+          },
+          ' ',
+          { $toUpper: { $substrCP: ['$name.last', 0, 1] } },
+          {
+            $substrCP: [
+              '$name.last',
+              1,
+              { $subtract: [{ $strLenCP: '$name.last' }, 1] },
+            ],
+          },
+        ],
+      },
+      birthDate: { $toDate: '$dob.date' },
+    },
+  },
+  {
+    $group: {
+      _id: { year: { $isoWeekYear: '$birthDate' } },
+      total: { $sum: 1 },
+    },
+  },
+]);
