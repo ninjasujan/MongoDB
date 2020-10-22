@@ -178,3 +178,146 @@ db.persons.aggregate([
     },
   },
 ]);
+
+/* Additional data */
+
+db.friends.insertMany([
+  {
+    name: 'Max',
+    hobbies: ['Sports', 'Cooking'],
+    age: 29,
+    examScores: [
+      { difficulty: 4, score: 57.9 },
+      { difficulty: 6, score: 62.1 },
+      { difficulty: 3, score: 88.5 },
+    ],
+  },
+  {
+    name: 'Manu',
+    hobbies: ['Eating', 'Data Analytics'],
+    age: 30,
+    examScores: [
+      { difficulty: 7, score: 52.1 },
+      { difficulty: 2, score: 74.3 },
+      { difficulty: 5, score: 53.1 },
+    ],
+  },
+  {
+    name: 'Maria',
+    hobbies: ['Cooking', 'Skiing'],
+    age: 29,
+    examScores: [
+      { difficulty: 3, score: 75.1 },
+      { difficulty: 8, score: 44.2 },
+      { difficulty: 6, score: 61.5 },
+    ],
+  },
+]);
+
+/* Pushing the element into newly cretaed elements */
+
+db.friends
+  .aggregate([
+    { $group: { _id: { age: '$age' }, allHobbies: { $push: '$age' } } },
+  ])
+  .pretty();
+db.friends
+  .aggregate([{ $group: { _id: '$age', allHobbies: { $push: '$hobbies' } } }])
+  .pretty();
+
+/* $unwind */
+
+db.friends.aggregate([{ $unwind: '$hobbies' }]);
+db.friends.aggregate([
+  { $unwind: '$hobbies' },
+  { $group: { _id: { age: '$age' }, allHobbies: { $addToSet: '$hobbies' } } },
+]);
+
+db.friends.aggregate([
+  { $project: { _id: 0, examScore: { $slice: ['$examScores', 1, 1] } } },
+]);
+
+// Length of an array
+db.friends.aggregate([
+  {
+    $project: {
+      _id: 0,
+      name: 1,
+      totalExams: { $size: '$examScores' },
+      score: {
+        $filter: {
+          input: '$examScores',
+          as: 'sc',
+          cond: { $gt: ['$$sc.score', 69] },
+        },
+      },
+    },
+  },
+]);
+
+/* Display the highest marks in the marks array */
+db.friends.aggregate([
+  {
+    $project: { _id: 0, score: '$examScores.score', name: { $first: '$name' } },
+  },
+  { $sort: { $maxScore: 1 } },
+]);
+
+db.friends.aggregate([
+  { $unwind: '$examScores' },
+  { $sort: { 'examScores.score': -1 } },
+  { $group: { _id: '$_id', name: { $first: '$name' } } },
+]);
+
+/* $bucket */
+
+db.persons.aggregate([
+  {
+    $bucket: {
+      groupBy: '$dob.age',
+      boundaries: [20, 50],
+      default: 'others',
+      output: {
+        average: { $avg: '$dob.age' },
+        total: { $sum: 1 },
+      },
+    },
+  },
+]);
+
+db.persons.aggregate([
+  {
+    $match: {
+      $and: [{ 'dob.age': { $gte: 20 } }, { 'dob.age': { $lt: 50 } }],
+    },
+  },
+  { $group: { _id: null, average: { $avg: '$dob.age' }, total: { $sum: 1 } } },
+]);
+
+db.persons.aggregate([
+  {
+    $project: {
+      _id: 0,
+      fullName: {
+        $concat: ['$name.title', ' ', '$name.first', ' ', '$name.last'],
+      },
+      date: { $toDate: '$dob.date' },
+    },
+  },
+  { $skip: 10 },
+  { $limit: 10 },
+  { $sort: { date: -1 } },
+  { $out: 'output' },
+]);
+
+/* $geoNear */
+
+db.persons.aggregate([
+  {
+    $geoNear: {
+      near: { type: 'Point', coordinates: [-18.4, -42.8] },
+      maxDistance: 1000000,
+      distanceField: 'distance',
+    },
+  },
+]);
